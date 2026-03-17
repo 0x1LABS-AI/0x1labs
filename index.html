@@ -3,7 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>0x1 Labs</title>
+<title>0x1 Labs — AI Product Studio</title>
+<meta name="description" content="0x1 Labs is an AI product studio. One human, infinite agents. We build focused, useful software that solves real problems.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://0x1labs.ai/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="0x1 Labs — AI Product Studio">
+<meta property="og:description" content="One human, infinite agents. We build focused, useful AI-powered software that solves real problems.">
+<meta property="og:url" content="https://0x1labs.ai/">
+<meta property="og:site_name" content="0x1 Labs">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="0x1 Labs — AI Product Studio">
+<meta name="twitter:description" content="One human, infinite agents. We build focused, useful AI-powered software that solves real problems.">
+
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,10 +46,9 @@ html, body {
   pointer-events: none;
   z-index: 99999;
   transform: translate(-50%, -50%);
-  animation: cblink 1.1s step-end infinite;
+  animation: blink 1.1s step-end infinite;
   top: 0; left: 0;
 }
-@keyframes cblink { 0%,100%{opacity:1} 50%{opacity:0} }
 @keyframes blink   { 0%,100%{opacity:1} 50%{opacity:0} }
 @keyframes fadein  { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 
@@ -69,6 +84,14 @@ html, body {
 }
 .gc { color: var(--green); animation: blink 1.1s step-end infinite; }
 
+h1, h2 {
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  margin: 0;
+}
+
 #mbtn {
   position: fixed; top: 28px; right: 32px;
   z-index: 9999;
@@ -77,6 +100,7 @@ html, body {
   font-size: 22px; font-weight: 400;
   color: #888; letter-spacing: -1px;
   cursor: none; padding: 12px 8px;
+  min-width: 44px; min-height: 44px;
   transition: color .2s;
   user-select: none; line-height: 1;
 }
@@ -90,6 +114,7 @@ html, body {
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px; color: #888;
   cursor: none; padding: 12px 8px;
+  min-width: 44px; min-height: 44px;
   transition: color .2s; letter-spacing: .06em;
   display: none;
 }
@@ -249,146 +274,188 @@ html, body {
   font-size: 12px; color: #888;
   padding: 9px 22px; cursor: none; letter-spacing: .1em;
   transition: border-color .2s, color .2s;
+  min-height: 44px;
 }
 .tsub:hover { border-color: var(--green); color: var(--green); }
+.tsub:disabled { opacity: .4; pointer-events: none; }
 .tok { display: none; padding: 28px 22px; flex-direction: column; gap: 8px; }
 .tok.show { display: flex; }
 .tok-g { font-size: 13px; color: var(--green); }
 .tok-w { font-size: 13px; color: var(--fg); }
 .tok-d { font-size: 12px; color: #888; }
+
+/* Touch devices: restore system cursor, hide custom cursor */
+@media (pointer: coarse) {
+  html, body, #mbtn, #bbtn, .nl, .pc, .ti, .ta, .tsub { cursor: auto; }
+  #cur { display: none; }
+}
+
+/* Mobile: stack layouts, increase targets, fix spacing */
+@media (max-width: 600px) {
+  .sp { padding: 90px 6vw 40px; }
+  .nfoot {
+    flex-direction: column;
+    gap: 18px;
+  }
+  .nfoot-r { text-align: left; }
+  #mbtn { top: 18px; right: 18px; }
+  #bbtn { top: 18px; left: 18px; }
+  .pgrid { grid-template-columns: 1fr; }
+  .sh { margin-bottom: 36px; }
+  .trow { flex-wrap: wrap; }
+  .tl { min-width: 60px; }
+}
 </style>
 </head>
 <body>
 
-<div id="scanline"></div>
-<div id="cur"></div>
-<button id="mbtn">&gt;_</button>
-<button id="bbtn">&lt; back</button>
+<div id="scanline" aria-hidden="true"></div>
+<div id="cur" aria-hidden="true"></div>
+<button id="mbtn" aria-label="Open menu" aria-expanded="false">&gt;_</button>
+<button id="bbtn" aria-label="Go back">&lt; back</button>
 
-<div id="home">
-  <div class="logo">
+<noscript>
+  <div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#000;color:#f0f0ee;font-family:monospace;text-align:center;padding:2rem;">
+    <div>
+      <p style="font-size:1.5rem;margin-bottom:1rem;">[0x1] <span style="color:#777;font-size:.8rem;letter-spacing:.3em;">LABS</span></p>
+      <p style="color:#888;font-size:.85rem;">Please enable JavaScript to experience this site.</p>
+    </div>
+  </div>
+</noscript>
+
+<header id="home">
+  <h1 class="logo">
     <span>[0x1]</span>
     <span class="logo-labs">LABS</span>
-    <span class="gc">_</span>
-  </div>
-</div>
+    <span class="gc" aria-hidden="true">_</span>
+  </h1>
+</header>
 
-<div id="nav">
-  <nav>
+<div id="nav" role="dialog" aria-label="Site navigation">
+  <nav aria-label="Main navigation">
     <div class="ni">
-      <span class="np">&gt;</span>
-      <a class="nl" href="#" data-s="work">WORK</a>
+      <span class="np" aria-hidden="true">&gt;</span>
+      <a class="nl" href="#work" data-s="work">WORK</a>
     </div>
     <div class="ni">
-      <span class="np">&gt;</span>
-      <a class="nl" href="#" data-s="about">ABOUT</a>
+      <span class="np" aria-hidden="true">&gt;</span>
+      <a class="nl" href="#about" data-s="about">ABOUT</a>
     </div>
     <div class="ni">
-      <span class="np">&gt;</span>
-      <a class="nl" href="#" data-s="contact">CONTACT</a>
+      <span class="np" aria-hidden="true">&gt;</span>
+      <a class="nl" href="#contact" data-s="contact">CONTACT</a>
     </div>
   </nav>
-  <div class="nfoot">
-    <div>0x1 Labs OÜ<br>Sepapaja tn 6, 15551<br>Tallinn, Estonia<br>Est. 2026</div>
-    <div class="nfoot-r">[esc] to close<br>one human.<br>infinite agents.</div>
-  </div>
+  <footer class="nfoot">
+    <div>0x1 Labs O&Uuml;<br>Sepapaja tn 6, 15551<br>Tallinn, Estonia<br>Est. 2026</div>
+    <div class="nfoot-r">[esc] to close<br>humans.<br>infinite agents.</div>
+  </footer>
 </div>
 
-<div class="sp" id="s-work">
-  <div class="sh"><span class="spt">&gt;</span><span class="stt">WORK_</span></div>
-  <div class="pgrid">
-    <div class="pc">
-      <div class="ps">// active</div>
-      <div class="pn">REX Recruitment</div>
-      <div class="pd">AI-powered recruitment platform built for agencies. Automates candidate sourcing, outreach and screening — REX works the pipeline until candidates respond, then hands off to your team. Built-in BD intelligence for new business lead generation.</div>
-      <div class="ptg">SaaS · Agencies</div>
+<main>
+  <section class="sp" id="s-work">
+    <div class="sh"><span class="spt" aria-hidden="true">&gt;</span><h2 class="stt">WORK_</h2></div>
+    <div class="pgrid">
+      <a class="pc" href="https://rexrecruitment.ai" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+        <div class="ps">// active soon</div>
+        <h3 class="pn">REX Recruitment</h3>
+        <p class="pd">AI-powered recruitment platform built for agencies. Automates candidate sourcing, outreach and screening — REX works the pipeline until candidates respond, then hands off to your team. Built-in BD intelligence for new business lead generation.</p>
+        <div class="ptg">SaaS · Agencies</div>
+      </a>
+      <article class="pc">
+        <div class="ps d">// initialising</div>
+        <h3 class="pn">MAX Marketing</h3>
+        <p class="pd">Next AI product under development. Details coming soon.</p>
+        <div class="ptg">AI · Marketing</div>
+      </article>
+      <article class="pc">
+        <div class="ps d">// queued</div>
+        <h3 class="pn">Agent Makr</h3>
+        <p class="pd">More in the pipeline. 0x1 Labs is a studio, not a startup.</p>
+        <div class="ptg">AI · Agents</div>
+      </article>
     </div>
-    <div class="pc">
-      <div class="ps d">// initialising</div>
-      <div class="pn">Project_02</div>
-      <div class="pd">Next AI product under development. Details coming soon.</div>
-      <div class="ptg">AI · TBA</div>
-    </div>
-    <div class="pc">
-      <div class="ps d">// queued</div>
-      <div class="pn">Project_03</div>
-      <div class="pd">More in the pipeline. 0x1 Labs is a studio, not a startup.</div>
-      <div class="ptg">AI · TBA</div>
-    </div>
-  </div>
-</div>
+  </section>
 
-<div class="sp" id="s-about">
-  <div class="sh"><span class="spt">&gt;</span><span class="stt">ABOUT_</span></div>
-  <div class="ac">
-    <p class="al"><strong>0x1 Labs</strong> is an AI product studio built on a simple premise — one human, running multiple AI-powered products at scale.</p>
-    <p class="al">We build <strong>focused, useful software</strong>. No noise. No bloat. Each product solves a real problem and pays for itself.</p>
-    <p class="al">Incorporated in <strong>Estonia</strong>. Operated from <strong>Thailand</strong>. Built for everywhere.</p>
-    <div class="astat">
-      <div><div class="sn">1</div><div class="sl">human</div></div>
-      <div><div class="sn">∞</div><div class="sl">agents</div></div>
-      <div><div class="sn">0x1</div><div class="sl">labs</div></div>
-    </div>
-  </div>
-</div>
-
-<div class="sp" id="s-contact">
-  <div class="sh"><span class="spt">&gt;</span><span class="stt">CONTACT_</span></div>
-  <div class="cc">
-    <div class="tw">
-      <div class="tbar">
-        <div class="td r"></div>
-        <div class="td y"></div>
-        <div class="td g"></div>
-        <span class="tttl">root@0x1labs.ai — new_message</span>
+  <section class="sp" id="s-about">
+    <div class="sh"><span class="spt" aria-hidden="true">&gt;</span><h2 class="stt">ABOUT_</h2></div>
+    <div class="ac">
+      <p class="al"><strong>0x1 Labs</strong> is an AI product studio built on a simple premise — more agents than humans. By design.</p>
+      <p class="al">We build <strong>focused, useful software</strong>. No noise. No bloat. Each product solves a real problem and pays for itself.</p>
+      <p class="al">Incorporated in <strong>Estonia</strong>. Operated from <strong>Thailand</strong>. Built for everywhere.</p>
+      <div class="astat">
+        <div><div class="sn">1</div><div class="sl">human</div></div>
+        <div><div class="sn" style="font-size:42px">&infin;</div><div class="sl">agents</div></div>
+        <div><div class="sn">0x1</div><div class="sl">labs</div></div>
       </div>
-      <div id="tform">
-        <div class="tbody">
-          <div class="trow">
-            <span class="tp">&gt;</span>
-            <span class="tl">name:</span>
-            <input class="ti" id="fn" type="text" placeholder="your name" autocomplete="off" spellcheck="false">
-          </div>
-          <div class="trow">
-            <span class="tp">&gt;</span>
-            <span class="tl">email:</span>
-            <input class="ti" id="fe" type="email" placeholder="your@email.com" autocomplete="off" spellcheck="false">
-          </div>
-          <div class="trow">
-            <span class="tp">&gt;</span>
-            <span class="tl">subject:</span>
-            <input class="ti" id="fs" type="text" placeholder="what's this about" autocomplete="off" spellcheck="false">
-          </div>
-          <div class="trow msg">
-            <span class="tp">&gt;</span>
-            <textarea class="ta" id="fm" placeholder="// your message here..." spellcheck="false"></textarea>
-          </div>
+    </div>
+  </section>
+
+  <section class="sp" id="s-contact">
+    <div class="sh"><span class="spt" aria-hidden="true">&gt;</span><h2 class="stt">CONTACT_</h2></div>
+    <div class="cc">
+      <div class="tw">
+        <div class="tbar" aria-hidden="true">
+          <div class="td r"></div>
+          <div class="td y"></div>
+          <div class="td g"></div>
+          <span class="tttl">root@0x1labs.ai — new_message</span>
         </div>
-        <div class="tfoot">
-          <div>
-            <div class="thint">// reaches <span>root@0x1labs.ai</span></div>
-            <div class="terr" id="terr">// error: all fields required</div>
+        <form id="tform" novalidate>
+          <div class="tbody">
+            <div class="trow">
+              <span class="tp" aria-hidden="true">&gt;</span>
+              <label class="tl" for="fn">name:</label>
+              <input class="ti" id="fn" name="name" type="text" placeholder="your name" autocomplete="name" spellcheck="false" required>
+            </div>
+            <div class="trow">
+              <span class="tp" aria-hidden="true">&gt;</span>
+              <label class="tl" for="fe">email:</label>
+              <input class="ti" id="fe" name="email" type="email" placeholder="your@email.com" autocomplete="email" spellcheck="false" required>
+            </div>
+            <div class="trow">
+              <span class="tp" aria-hidden="true">&gt;</span>
+              <label class="tl" for="fs">subject:</label>
+              <input class="ti" id="fs" name="subject" type="text" placeholder="what's this about" autocomplete="off" spellcheck="false" required>
+            </div>
+            <div class="trow msg">
+              <span class="tp" aria-hidden="true">&gt;</span>
+              <label class="tl visually-hidden" for="fm">message:</label>
+              <textarea class="ta" id="fm" name="message" placeholder="// your message here..." spellcheck="false" required></textarea>
+            </div>
           </div>
-          <button class="tsub" id="tsend">./send_message</button>
+          <div class="tfoot">
+            <div>
+              <div class="thint">// reaches <span>root@0x1labs.ai</span></div>
+              <div class="terr" id="terr" role="alert">// error: all fields required</div>
+            </div>
+            <button type="submit" class="tsub" id="tsend">./send_message</button>
+          </div>
+        </form>
+        <div class="tok" id="tok" role="status">
+          <div class="tok-g">// message transmitted successfully</div>
+          <div class="tok-w">we read everything.</div>
+          <div class="tok-d">we reply to what matters.</div>
+          <div class="tok-d" style="margin-top:12px;font-size:11px;">root@0x1labs.ai</div>
         </div>
       </div>
-      <div class="tok" id="tok">
-        <div class="tok-g">// message transmitted successfully</div>
-        <div class="tok-w">we read everything.</div>
-        <div class="tok-d">we reply to what matters.</div>
-        <div class="tok-d" style="margin-top:12px;font-size:11px;">root@0x1labs.ai</div>
-      </div>
     </div>
-  </div>
-</div>
+  </section>
+</main>
 
 <script>
-var cur     = document.getElementById('cur');
-var mbtn    = document.getElementById('mbtn');
-var bbtn    = document.getElementById('bbtn');
-var nav     = document.getElementById('nav');
-var navOpen = false;
-var activeSp = null;
+// ── CONFIG ──────────────────────────────────────────────
+// Sign up free at https://formspree.io, create a form, and paste your endpoint below.
+// While this is set to null, the form falls back to mailto: as a safety net.
+const FORM_ENDPOINT = null; // e.g. 'https://formspree.io/f/xYOURID'
+// ────────────────────────────────────────────────────────
+
+const cur     = document.getElementById('cur');
+const mbtn    = document.getElementById('mbtn');
+const bbtn    = document.getElementById('bbtn');
+const navEl   = document.getElementById('nav');
+let navOpen   = false;
+let activeSp  = null;
 
 document.addEventListener('mousemove', function(e) {
   cur.style.left = e.clientX + 'px';
@@ -401,27 +468,33 @@ document.querySelectorAll('a, button, input, textarea, .pc').forEach(function(el
 });
 
 function openNav() {
-  nav.classList.add('show');
+  navEl.classList.add('show');
   mbtn.classList.add('on');
   mbtn.textContent = '\u00d7';
+  mbtn.setAttribute('aria-expanded', 'true');
+  mbtn.setAttribute('aria-label', 'Close menu');
   navOpen = true;
 }
 
 function closeNav() {
-  nav.classList.remove('show');
+  navEl.classList.remove('show');
   mbtn.classList.remove('on');
   mbtn.textContent = '>_';
+  mbtn.setAttribute('aria-expanded', 'false');
+  mbtn.setAttribute('aria-label', 'Open menu');
   navOpen = false;
 }
 
 function openSp(id) {
-  var el = document.getElementById('s-' + id);
+  const el = document.getElementById('s-' + id);
   if (!el) return;
   el.classList.add('show');
   activeSp = el;
   bbtn.classList.add('show');
   mbtn.textContent = '\u00d7';
   mbtn.classList.add('on');
+  mbtn.setAttribute('aria-expanded', 'true');
+  mbtn.setAttribute('aria-label', 'Close panel');
 }
 
 function closeSp() {
@@ -429,6 +502,8 @@ function closeSp() {
   bbtn.classList.remove('show');
   mbtn.textContent = '>_';
   mbtn.classList.remove('on');
+  mbtn.setAttribute('aria-expanded', 'false');
+  mbtn.setAttribute('aria-label', 'Open menu');
   navOpen = false;
 }
 
@@ -443,7 +518,7 @@ bbtn.addEventListener('click', function() { closeSp(); });
 document.querySelectorAll('.nl').forEach(function(a) {
   a.addEventListener('click', function(e) {
     e.preventDefault();
-    var id = this.getAttribute('data-s');
+    const id = this.getAttribute('data-s');
     closeNav();
     setTimeout(function(){ openSp(id); }, 80);
   });
@@ -455,19 +530,56 @@ document.addEventListener('keydown', function(e) {
   else if (navOpen) closeNav();
 });
 
-document.getElementById('tsend').addEventListener('click', function() {
-  var n   = document.getElementById('fn').value.trim();
-  var e   = document.getElementById('fe').value.trim();
-  var s   = document.getElementById('fs').value.trim();
-  var m   = document.getElementById('fm').value.trim();
-  var err = document.getElementById('terr');
-  if (!n || !e || !s || !m) { err.classList.add('show'); return; }
-  err.classList.remove('show');
-  window.location.href = 'mailto:root@0x1labs.ai?subject='
-    + encodeURIComponent(s + ' — ' + n)
-    + '&body=' + encodeURIComponent('Name: ' + n + '\nEmail: ' + e + '\n\n' + m);
-  document.getElementById('tform').style.display = 'none';
-  document.getElementById('tok').classList.add('show');
+// ── Contact form ────────────────────────────────────────
+document.getElementById('tform').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const nameVal    = document.getElementById('fn').value.trim();
+  const emailVal   = document.getElementById('fe').value.trim();
+  const subjectVal = document.getElementById('fs').value.trim();
+  const msgVal     = document.getElementById('fm').value.trim();
+  const errEl      = document.getElementById('terr');
+  const sendBtn    = document.getElementById('tsend');
+
+  if (!nameVal || !emailVal || !subjectVal || !msgVal) {
+    errEl.classList.add('show');
+    return;
+  }
+  errEl.classList.remove('show');
+
+  if (FORM_ENDPOINT) {
+    sendBtn.disabled = true;
+    sendBtn.textContent = './sending...';
+
+    fetch(FORM_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        name: nameVal,
+        email: emailVal,
+        subject: subjectVal,
+        message: msgVal
+      })
+    })
+    .then(function(res) {
+      if (!res.ok) throw new Error('send failed');
+      document.getElementById('tform').style.display = 'none';
+      document.getElementById('tok').classList.add('show');
+    })
+    .catch(function() {
+      errEl.textContent = '// error: transmission failed — try again';
+      errEl.classList.add('show');
+      sendBtn.disabled = false;
+      sendBtn.textContent = './send_message';
+    });
+  } else {
+    // Fallback: mailto
+    window.location.href = 'mailto:root@0x1labs.ai?subject='
+      + encodeURIComponent(subjectVal + ' \u2014 ' + nameVal)
+      + '&body=' + encodeURIComponent('Name: ' + nameVal + '\nEmail: ' + emailVal + '\n\n' + msgVal);
+    document.getElementById('tform').style.display = 'none';
+    document.getElementById('tok').classList.add('show');
+  }
 });
 </script>
 </body>
