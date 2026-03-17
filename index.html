@@ -224,7 +224,7 @@ h1, h2 {
 .ac { max-width: 540px; }
 .al { font-size: clamp(13px, 2vw, 16px); font-weight: 300; line-height: 2.1; color: #999; margin-bottom: 28px; }
 .al strong { color: var(--fg); font-weight: 400; }
-.astat { display: flex; gap: 40px; margin-top: 44px; flex-wrap: wrap; }
+.astat { display: flex; gap: 40px; margin-top: 44px; flex-wrap: wrap; align-items: flex-end; }
 .sn { font-size: 30px; font-weight: 400; letter-spacing: -1px; line-height: 1; }
 .sl { font-size: 10px; letter-spacing: .18em; color: #777; margin-top: 6px; text-transform: uppercase; }
 
@@ -296,6 +296,7 @@ h1, h2 {
 
 /* Mobile: stack layouts, increase targets, fix spacing */
 @media (max-width: 600px) {
+  .logo { font-size: clamp(44px, 12vw, 72px); }
   .sp { padding: 90px 6vw 40px; }
   .nfoot {
     flex-direction: column;
@@ -389,7 +390,7 @@ h1, h2 {
       <p class="al">Incorporated in <strong>Estonia</strong>. Operated from <strong>Thailand</strong>. Built for everywhere.</p>
       <div class="astat">
         <div><div class="sn">1</div><div class="sl">human</div></div>
-        <div><div class="sn" style="font-size:42px">&infin;</div><div class="sl">agents</div></div>
+        <div><div class="sn" style="font-size:38px;line-height:30px">&infin;</div><div class="sl">agents</div></div>
         <div><div class="sn">0x1</div><div class="sl">labs</div></div>
       </div>
     </div>
