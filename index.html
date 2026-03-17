@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0x1 Labs</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #39d353;
+  --fg: #f0f0ee;
+  --bg: #000;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'JetBrains Mono', monospace;
+  cursor: none;
+  overflow: hidden;
+}
+
+#cur {
+  position: fixed;
+  width: 6px; height: 18px;
+  background: var(--green);
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  animation: cblink 1.1s step-end infinite;
+  top: 0; left: 0;
+}
+@keyframes cblink { 0%,100%{opacity:1} 50%{opacity:0} }
+@keyframes blink   { 0%,100%{opacity:1} 50%{opacity:0} }
+@keyframes fadein  { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+#scanline {
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(255,255,255,0.013) 2px, rgba(255,255,255,0.013) 4px
+  );
+  pointer-events: none;
+  z-index: 50;
+}
+
+#home {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.logo {
+  display: flex; align-items: baseline;
+  font-size: clamp(38px, 8vw, 72px);
+  font-weight: 400; letter-spacing: -1px;
+  white-space: nowrap;
+  animation: fadein 1.8s ease forwards;
+}
+.logo-labs {
+  font-size: clamp(11px, 1.8vw, 19px);
+  font-weight: 300; color: #777;
+  letter-spacing: .3em; margin-left: 10px;
+  align-self: center; padding-bottom: 3px;
+}
+.gc { color: var(--green); animation: blink 1.1s step-end infinite; }
+
+#mbtn {
+  position: fixed; top: 28px; right: 32px;
+  z-index: 9999;
+  background: none; border: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px; font-weight: 400;
+  color: #888; letter-spacing: -1px;
+  cursor: none; padding: 12px 8px;
+  transition: color .2s;
+  user-select: none; line-height: 1;
+}
+#mbtn:hover { color: var(--fg); }
+#mbtn.on    { color: var(--green); }
+
+#bbtn {
+  position: fixed; top: 28px; left: 32px;
+  z-index: 9999;
+  background: none; border: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; color: #888;
+  cursor: none; padding: 12px 8px;
+  transition: color .2s; letter-spacing: .06em;
+  display: none;
+}
+#bbtn:hover { color: var(--fg); }
+#bbtn.show  { display: block; }
+
+#nav {
+  position: fixed; inset: 0;
+  background: #000;
+  z-index: 8000;
+  display: flex; flex-direction: column;
+  justify-content: center;
+  padding: 0 10vw;
+  opacity: 0; pointer-events: none;
+  transition: opacity .6s cubic-bezier(.16,1,.3,1);
+}
+#nav.show { opacity: 1; pointer-events: all; }
+
+.ni {
+  display: flex; align-items: baseline;
+  gap: 14px; margin-bottom: 4px;
+}
+.np {
+  font-size: clamp(14px, 2vw, 18px);
+  color: var(--green); font-weight: 300;
+  opacity: 0; transform: translateY(28px);
+  transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1);
+}
+.nl {
+  font-size: clamp(38px, 9vw, 86px);
+  font-weight: 400; letter-spacing: -2px;
+  color: #333; text-decoration: none;
+  line-height: 1.1; white-space: nowrap;
+  opacity: 0; transform: translateY(36px);
+  transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1), color .15s;
+  cursor: none;
+}
+.nl:hover { color: var(--fg); }
+
+#nav.show .np,
+#nav.show .nl { opacity: 1; transform: translateY(0); }
+#nav.show .ni:nth-child(1) .np,
+#nav.show .ni:nth-child(1) .nl { transition-delay: .07s; }
+#nav.show .ni:nth-child(2) .np,
+#nav.show .ni:nth-child(2) .nl { transition-delay: .14s; }
+#nav.show .ni:nth-child(3) .np,
+#nav.show .ni:nth-child(3) .nl { transition-delay: .21s; }
+
+.nfoot {
+  position: absolute; bottom: 28px;
+  left: 10vw; right: 10vw;
+  display: flex; justify-content: space-between;
+  font-size: 11px; color: #777; letter-spacing: .1em; line-height: 1.9;
+  opacity: 0; transition: opacity .6s .28s;
+}
+#nav.show .nfoot { opacity: 1; }
+.nfoot-r { text-align: right; }
+
+.sp {
+  position: fixed; inset: 0;
+  background: #000; z-index: 7000;
+  display: flex; flex-direction: column;
+  padding: 110px 10vw 60px;
+  opacity: 0; pointer-events: none;
+  transform: translateY(16px);
+  transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1);
+  overflow-y: auto;
+}
+.sp.show { opacity: 1; pointer-events: all; transform: translateY(0); }
+
+.sh {
+  display: flex; align-items: baseline; gap: 12px;
+  margin-bottom: 56px;
+}
+.spt { font-size: 16px; color: var(--green); font-weight: 300; }
+.stt { font-size: clamp(26px, 5vw, 46px); font-weight: 400; letter-spacing: -1px; }
+
+.pgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 2px;
+}
+.pc {
+  border: 0.5px solid #1a1a1a;
+  padding: 32px 28px; cursor: none;
+  transition: border-color .2s, background .2s;
+  position: relative;
+}
+.pc:hover { border-color: #444; background: #080808; }
+.pc::after {
+  content: '>';
+  position: absolute; bottom: 28px; right: 28px;
+  color: var(--green); font-size: 13px;
+  opacity: 0; transition: opacity .2s;
+}
+.pc:hover::after { opacity: 1; }
+.ps   { font-size: 10px; letter-spacing: .18em; color: var(--green); text-transform: uppercase; margin-bottom: 18px; }
+.ps.d { color: #666; }
+.pn   { font-size: 21px; font-weight: 400; letter-spacing: -.5px; margin-bottom: 10px; }
+.pd   { font-size: 12px; color: #888; line-height: 1.8; font-weight: 300; }
+.ptg  { display: inline-block; margin-top: 22px; font-size: 10px; letter-spacing: .14em; color: #777; border: 0.5px solid #1e1e1e; padding: 4px 10px; }
+
+.ac { max-width: 540px; }
+.al { font-size: clamp(13px, 2vw, 16px); font-weight: 300; line-height: 2.1; color: #999; margin-bottom: 28px; }
+.al strong { color: var(--fg); font-weight: 400; }
+.astat { display: flex; gap: 40px; margin-top: 44px; flex-wrap: wrap; }
+.sn { font-size: 30px; font-weight: 400; letter-spacing: -1px; line-height: 1; }
+.sl { font-size: 10px; letter-spacing: .18em; color: #777; margin-top: 6px; text-transform: uppercase; }
+
+.cc  { max-width: 580px; }
+.tw  { border: 0.5px solid #1e1e1e; border-radius: 6px; overflow: hidden; }
+.tbar {
+  background: #111; padding: 10px 16px;
+  display: flex; align-items: center; gap: 7px;
+  border-bottom: 0.5px solid #1a1a1a;
+}
+.td   { width: 10px; height: 10px; border-radius: 50%; }
+.td.r { background: #3a1212; }
+.td.y { background: #2e2812; }
+.td.g { background: var(--green); opacity: .5; }
+.tttl { font-size: 11px; color: #888; letter-spacing: .1em; margin-left: 6px; }
+.tbody { padding: 20px 22px; display: flex; flex-direction: column; }
+.trow {
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 0.5px solid #1a1a1a; padding: 14px 0;
+}
+.trow.msg { align-items: flex-start; border-bottom: none; }
+.tp  { color: var(--green); font-size: 14px; flex-shrink: 0; user-select: none; }
+.tl  { font-size: 12px; color: #888; flex-shrink: 0; min-width: 76px; letter-spacing: .05em; }
+.ti  {
+  background: none; border: none; outline: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; color: var(--fg);
+  width: 100%; caret-color: var(--green); cursor: none;
+}
+.ti::placeholder { color: #555; }
+.ta  {
+  background: none; border: none; outline: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 300; color: var(--fg);
+  width: 100%; resize: none; min-height: 80px;
+  line-height: 1.9; caret-color: var(--green); cursor: none;
+}
+.ta::placeholder { color: #555; }
+.tfoot {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 16px 22px 20px; flex-wrap: wrap; gap: 10px;
+}
+.thint { font-size: 11px; color: #777; letter-spacing: .05em; }
+.thint span { color: var(--green); }
+.terr { font-size: 11px; color: #c0392b; letter-spacing: .06em; margin-top: 4px; display: none; }
+.terr.show { display: block; }
+.tsub {
+  background: none; border: 0.5px solid #333;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; color: #888;
+  padding: 9px 22px; cursor: none; letter-spacing: .1em;
+  transition: border-color .2s, color .2s;
+}
+.tsub:hover { border-color: var(--green); color: var(--green); }
+.tok { display: none; padding: 28px 22px; flex-direction: column; gap: 8px; }
+.tok.show { display: flex; }
+.tok-g { font-size: 13px; color: var(--green); }
+.tok-w { font-size: 13px; color: var(--fg); }
+.tok-d { font-size: 12px; color: #888; }
+</style>
+</head>
+<body>
+
+<div id="scanline"></div>
+<div id="cur"></div>
+<button id="mbtn">&gt;_</button>
+<button id="bbtn">&lt; back</button>
+
+<div id="home">
+  <div class="logo">
+    <span>[0x1]</span>
+    <span class="logo-labs">LABS</span>
+    <span class="gc">_</span>
+  </div>
+</div>
+
+<div id="nav">
+  <nav>
+    <div class="ni">
+      <span class="np">&gt;</span>
+      <a class="nl" href="#" data-s="work">WORK</a>
+    </div>
+    <div class="ni">
+      <span class="np">&gt;</span>
+      <a class="nl" href="#" data-s="about">ABOUT</a>
+    </div>
+    <div class="ni">
+      <span class="np">&gt;</span>
+      <a class="nl" href="#" data-s="contact">CONTACT</a>
+    </div>
+  </nav>
+  <div class="nfoot">
+    <div>0x1 Labs OÜ<br>Sepapaja tn 6, 15551<br>Tallinn, Estonia<br>Est. 2026</div>
+    <div class="nfoot-r">[esc] to close<br>one human.<br>infinite agents.</div>
+  </div>
+</div>
+
+<div class="sp" id="s-work">
+  <div class="sh"><span class="spt">&gt;</span><span class="stt">WORK_</span></div>
+  <div class="pgrid">
+    <div class="pc">
+      <div class="ps">// active</div>
+      <div class="pn">REX Recruitment</div>
+      <div class="pd">AI-powered recruitment platform built for agencies. Automates candidate sourcing, outreach and screening — REX works the pipeline until candidates respond, then hands off to your team. Built-in BD intelligence for new business lead generation.</div>
+      <div class="ptg">SaaS · Agencies</div>
+    </div>
+    <div class="pc">
+      <div class="ps d">// initialising</div>
+      <div class="pn">Project_02</div>
+      <div class="pd">Next AI product under development. Details coming soon.</div>
+      <div class="ptg">AI · TBA</div>
+    </div>
+    <div class="pc">
+      <div class="ps d">// queued</div>
+      <div class="pn">Project_03</div>
+      <div class="pd">More in the pipeline. 0x1 Labs is a studio, not a startup.</div>
+      <div class="ptg">AI · TBA</div>
+    </div>
+  </div>
+</div>
+
+<div class="sp" id="s-about">
+  <div class="sh"><span class="spt">&gt;</span><span class="stt">ABOUT_</span></div>
+  <div class="ac">
+    <p class="al"><strong>0x1 Labs</strong> is an AI product studio built on a simple premise — one human, running multiple AI-powered products at scale.</p>
+    <p class="al">We build <strong>focused, useful software</strong>. No noise. No bloat. Each product solves a real problem and pays for itself.</p>
+    <p class="al">Incorporated in <strong>Estonia</strong>. Operated from <strong>Thailand</strong>. Built for everywhere.</p>
+    <div class="astat">
+      <div><div class="sn">1</div><div class="sl">human</div></div>
+      <div><div class="sn">∞</div><div class="sl">agents</div></div>
+      <div><div class="sn">0x1</div><div class="sl">labs</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="sp" id="s-contact">
+  <div class="sh"><span class="spt">&gt;</span><span class="stt">CONTACT_</span></div>
+  <div class="cc">
+    <div class="tw">
+      <div class="tbar">
+        <div class="td r"></div>
+        <div class="td y"></div>
+        <div class="td g"></div>
+        <span class="tttl">root@0x1labs.ai — new_message</span>
+      </div>
+      <div id="tform">
+        <div class="tbody">
+          <div class="trow">
+            <span class="tp">&gt;</span>
+            <span class="tl">name:</span>
+            <input class="ti" id="fn" type="text" placeholder="your name" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="trow">
+            <span class="tp">&gt;</span>
+            <span class="tl">email:</span>
+            <input class="ti" id="fe" type="email" placeholder="your@email.com" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="trow">
+            <span class="tp">&gt;</span>
+            <span class="tl">subject:</span>
+            <input class="ti" id="fs" type="text" placeholder="what's this about" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="trow msg">
+            <span class="tp">&gt;</span>
+            <textarea class="ta" id="fm" placeholder="// your message here..." spellcheck="false"></textarea>
+          </div>
+        </div>
+        <div class="tfoot">
+          <div>
+            <div class="thint">// reaches <span>root@0x1labs.ai</span></div>
+            <div class="terr" id="terr">// error: all fields required</div>
+          </div>
+          <button class="tsub" id="tsend">./send_message</button>
+        </div>
+      </div>
+      <div class="tok" id="tok">
+        <div class="tok-g">// message transmitted successfully</div>
+        <div class="tok-w">we read everything.</div>
+        <div class="tok-d">we reply to what matters.</div>
+        <div class="tok-d" style="margin-top:12px;font-size:11px;">root@0x1labs.ai</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var cur     = document.getElementById('cur');
+var mbtn    = document.getElementById('mbtn');
+var bbtn    = document.getElementById('bbtn');
+var nav     = document.getElementById('nav');
+var navOpen = false;
+var activeSp = null;
+
+document.addEventListener('mousemove', function(e) {
+  cur.style.left = e.clientX + 'px';
+  cur.style.top  = e.clientY + 'px';
+});
+
+document.querySelectorAll('a, button, input, textarea, .pc').forEach(function(el) {
+  el.addEventListener('mouseenter', function(){ cur.style.width='2px'; cur.style.height='24px'; });
+  el.addEventListener('mouseleave', function(){ cur.style.width='6px'; cur.style.height='18px'; });
+});
+
+function openNav() {
+  nav.classList.add('show');
+  mbtn.classList.add('on');
+  mbtn.textContent = '\u00d7';
+  navOpen = true;
+}
+
+function closeNav() {
+  nav.classList.remove('show');
+  mbtn.classList.remove('on');
+  mbtn.textContent = '>_';
+  navOpen = false;
+}
+
+function openSp(id) {
+  var el = document.getElementById('s-' + id);
+  if (!el) return;
+  el.classList.add('show');
+  activeSp = el;
+  bbtn.classList.add('show');
+  mbtn.textContent = '\u00d7';
+  mbtn.classList.add('on');
+}
+
+function closeSp() {
+  if (activeSp) { activeSp.classList.remove('show'); activeSp = null; }
+  bbtn.classList.remove('show');
+  mbtn.textContent = '>_';
+  mbtn.classList.remove('on');
+  navOpen = false;
+}
+
+mbtn.addEventListener('click', function() {
+  if (activeSp)      { closeSp();  return; }
+  if (navOpen)       { closeNav(); return; }
+  openNav();
+});
+
+bbtn.addEventListener('click', function() { closeSp(); });
+
+document.querySelectorAll('.nl').forEach(function(a) {
+  a.addEventListener('click', function(e) {
+    e.preventDefault();
+    var id = this.getAttribute('data-s');
+    closeNav();
+    setTimeout(function(){ openSp(id); }, 80);
+  });
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Escape') return;
+  if (activeSp) closeSp();
+  else if (navOpen) closeNav();
+});
+
+document.getElementById('tsend').addEventListener('click', function() {
+  var n   = document.getElementById('fn').value.trim();
+  var e   = document.getElementById('fe').value.trim();
+  var s   = document.getElementById('fs').value.trim();
+  var m   = document.getElementById('fm').value.trim();
+  var err = document.getElementById('terr');
+  if (!n || !e || !s || !m) { err.classList.add('show'); return; }
+  err.classList.remove('show');
+  window.location.href = 'mailto:root@0x1labs.ai?subject='
+    + encodeURIComponent(s + ' — ' + n)
+    + '&body=' + encodeURIComponent('Name: ' + n + '\nEmail: ' + e + '\n\n' + m);
+  document.getElementById('tform').style.display = 'none';
+  document.getElementById('tok').classList.add('show');
+});
+</script>
+</body>
+</html>
